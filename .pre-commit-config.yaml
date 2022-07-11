@@ -1,0 +1,9 @@
+repos:
+-   repo: https://github.com/ambv/black
+    rev: 22.6.0
+    hooks:
+    - id: black
+      language: python
+      types: [python]
+      args: ["torch-segmentation-3d", "--line-length=120"]
+  
