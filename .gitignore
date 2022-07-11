@@ -1,4 +1,6 @@
 .python-version
+clean.sh
+tests
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
