@@ -3,7 +3,7 @@ import torch.nn as nn
 from typing import Optional, Union, List
 from torch_segmentation_3d.encoders import get_encoder
 from torch_segmentation_3d.base.heads import SegmentationHead
-from torch_segmentation_3d.decoders.unet.decoder import UnetDecoder
+from torch_segmentation_3d.models.unet.decoder import UnetDecoder
 
 
 class Unet(nn.Module):
