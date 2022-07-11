@@ -3,7 +3,7 @@ Based on https://github.com/pytorch/vision/blob/main/torchvision/models/resnet.p
 """
 import torch
 import torch.nn as nn
-from base.encoder import BaseEncoder
+from torch_segmentation_3d.base.encoder import BaseEncoder
 
 
 def conv3x3(in_planes, out_planes, stride=1, groups=1, dilation=1):

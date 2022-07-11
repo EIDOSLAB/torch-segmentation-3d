@@ -5,5 +5,5 @@ repos:
     - id: black
       language: python
       types: [python]
-      args: ["torch-segmentation-3d", "--line-length=120"]
+      args: ["torch_segmentation_3d", "--line-length=120"]
   

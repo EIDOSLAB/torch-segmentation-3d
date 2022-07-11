@@ -1,5 +1,5 @@
-from base.encoder import BaseEncoder
-from encoders.resnet import resnet_encoders
+from torch_segmentation_3d.base.encoder import BaseEncoder
+from torch_segmentation_3d.encoders.resnet import resnet_encoders
 
 __all_encoders__ = resnet_encoders
 

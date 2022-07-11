@@ -1,16 +1,16 @@
 import torch
 import torch.nn as nn
 from typing import Optional, Union, List
-from encoders import get_encoder
-from base.heads import SegmentationHead
-from .decoder import UnetDecoder
+from torch_segmentation_3d.encoders import get_encoder
+from torch_segmentation_3d.base.heads import SegmentationHead
+from torch_segmentation_3d.decoders.unet.decoder import UnetDecoder
 
 
 class Unet(nn.Module):
     def __init__(
         self,
         encoder_name: str = "resnet34",
-        encoder_weights: Optional[str] = "imagenet",
+        encoder_weights: Optional[str] = None,
         decoder_use_batchnorm: bool = True,
         decoder_channels: List[int] = (256, 128, 64, 32, 16),
         in_channels: int = 3,
