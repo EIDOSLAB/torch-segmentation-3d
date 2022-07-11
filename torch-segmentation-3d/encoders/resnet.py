@@ -3,7 +3,7 @@ Based on https://github.com/pytorch/vision/blob/main/torchvision/models/resnet.p
 """
 import torch
 import torch.nn as nn
-from .base import BaseEncoder
+from base.encoder import BaseEncoder
 
 
 def conv3x3(in_planes, out_planes, stride=1, groups=1, dilation=1):
@@ -143,6 +143,7 @@ class ResNet(BaseEncoder):
         norm_layer=None,
         prediction_bias=True,
         initial_kernel_size=7,
+        out_channels=None,
     ):
         super(ResNet, self).__init__()
 
@@ -179,31 +180,12 @@ class ResNet(BaseEncoder):
         self.bn1 = norm_layer(self.inplanes)
         self.relu = nn.ReLU(inplace=True)
         self.maxpool = nn.MaxPool3d(kernel_size=3, stride=2, padding=1)
+        self.out_channels = out_channels
 
-        channels = [64, 128, 256, 512]
-
-        self.layer1 = self._make_layer(block, channels[0], layers[0])
-        self.layer2 = self._make_layer(
-            block,
-            channels[1],
-            layers[1],
-            stride=2,
-            dilate=replace_stride_with_dilation[0],
-        )
-        self.layer3 = self._make_layer(
-            block,
-            channels[2],
-            layers[2],
-            stride=2,
-            dilate=replace_stride_with_dilation[1],
-        )
-        self.layer4 = self._make_layer(
-            block,
-            channels[3],
-            layers[3],
-            stride=2,
-            dilate=replace_stride_with_dilation[2],
-        )
+        self.layer1 = self._make_layer(block, 64, layers[0])
+        self.layer2 = self._make_layer(block, 128, layers[1], stride=2, dilate=replace_stride_with_dilation[0])
+        self.layer3 = self._make_layer(block, 256, layers[2], stride=2, dilate=replace_stride_with_dilation[1])
+        self.layer4 = self._make_layer(block, 512, layers[3], stride=2, dilate=replace_stride_with_dilation[2])
 
         for m in self.modules():
             if isinstance(m, nn.Conv3d):
@@ -288,31 +270,36 @@ class ResNet(BaseEncoder):
         return features
 
 
-def _resnet(block, layers, **kwargs):
-    model = ResNet(block, layers, **kwargs)
+def _resnet(block, layers, out_channels, weights, **kwargs):
+    if weights is not None:
+        raise NotImplementedError("Pretrained encoders are not available")
+
+    model = ResNet(block, layers, out_channels=out_channels, **kwargs)
     return model
 
 
-def resnet18(**kwargs):
-    return _resnet(BasicBlock, [2, 2, 2, 2], **kwargs)
+def resnet18(weights=None, **kwargs):
+    return _resnet(BasicBlock, [2, 2, 2, 2], (3, 64, 64, 128, 256, 512), weights, **kwargs)
 
 
-def resnet34(**kwargs):
-    return _resnet(BasicBlock, [3, 4, 6, 3], **kwargs)
+def resnet34(weights=None, **kwargs):
+    return _resnet(BasicBlock, [3, 4, 6, 3], (3, 64, 64, 128, 256, 512), weights, **kwargs)
 
 
-def resnet50(**kwargs):
-    return _resnet(Bottleneck, [3, 4, 6, 3], **kwargs)
+def resnet50(weights=None, **kwargs):
+    return _resnet(Bottleneck, [3, 4, 6, 3], (3, 64, 256, 512, 1024, 2048), weights, **kwargs)
 
 
-def resnet101(**kwargs):
-    return _resnet(Bottleneck, [3, 4, 23, 3], **kwargs)
+def resnet101(weights=None, **kwargs):
+    return _resnet(Bottleneck, [3, 4, 23, 3], (3, 64, 256, 512, 1024, 2048), weights, **kwargs)
 
+
+resnet_encoders = {"resnet18": resnet18, "resnet34": resnet34, "resnet50": resnet50, "resnet101": resnet101}
 
 if __name__ == "__main__":
     x = torch.randn((3, 1, 144, 144, 150))
 
-    model = resnet18(in_channels=1)
+    model = resnet50(in_channels=1)
     with torch.no_grad():
         features = model(x)
         for feat in features:
