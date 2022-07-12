@@ -6,6 +6,9 @@ Supported architectures:
 Supported encoders:
  - resnet18, resnet34, resnet50, resnet101
 
+Install:
+  git clone git@github.com:EIDOSLAB/torch-segmentation-3d.git && cd torch-segmentation-3d
+  pip3 install .
 
 Example:
 
