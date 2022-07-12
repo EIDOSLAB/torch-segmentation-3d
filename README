@@ -8,6 +8,6 @@ Supported encoders:
 
 
 Example:
-  import torch_segmentation_3d as seg3d
 
+  import torch_segmentation_3d as seg3d
   model = seg3d.models.Unet(encoder_name="resnet18", in_channels=1, classes=3)
