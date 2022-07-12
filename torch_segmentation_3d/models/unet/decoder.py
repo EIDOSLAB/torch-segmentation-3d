@@ -6,65 +6,31 @@ import torch.nn.functional as F
 from torch import nn
 
 
-class Conv3dReLU(nn.Sequential):
-    def __init__(
-        self,
-        in_channels,
-        out_channels,
-        kernel_size,
-        padding=0,
-        stride=1,
-        use_batchnorm=True,
-    ):
+class BasicBlock(nn.Sequential):
+    def __init__(self, in_channels, out_channels, kernel_size, padding=0, stride=1, use_batchnorm=True):
 
         conv = nn.Conv3d(
-            in_channels,
-            out_channels,
-            kernel_size,
-            stride=stride,
-            padding=padding,
-            bias=not (use_batchnorm),
+            in_channels, out_channels, kernel_size, stride=stride, padding=padding, bias=not (use_batchnorm)
         )
         relu = nn.ReLU(inplace=True)
-
-        if use_batchnorm:
-            bn = nn.BatchNorm3d(out_channels)
-
-        else:
-            bn = nn.Identity()
-
+        bn = nn.BatchNorm3d(out_channels) if use_batchnorm else nn.Identity()
         super().__init__(conv, bn, relu)
 
 
 class DecoderBlock(nn.Module):
-    def __init__(
-        self,
-        in_channels,
-        skip_channels,
-        out_channels,
-        use_batchnorm=True,
-    ):
+    def __init__(self, in_channels, skip_channels, out_channels, use_batchnorm=True):
         super().__init__()
-        self.conv1 = Conv3dReLU(
-            in_channels + skip_channels,
-            out_channels,
-            kernel_size=3,
-            padding=1,
-            use_batchnorm=use_batchnorm,
+        self.conv1 = BasicBlock(
+            in_channels + skip_channels, out_channels, kernel_size=3, padding=1, use_batchnorm=use_batchnorm
         )
-
-        self.conv2 = Conv3dReLU(
-            out_channels,
-            out_channels,
-            kernel_size=3,
-            padding=1,
-            use_batchnorm=use_batchnorm,
-        )
+        self.conv2 = BasicBlock(out_channels, out_channels, kernel_size=3, padding=1, use_batchnorm=use_batchnorm)
 
     def forward(self, x, skip=None):
         x = F.interpolate(x, scale_factor=2, mode="nearest")
+
         if skip is not None:
             x = torch.cat([x, skip], dim=1)
+
         x = self.conv1(x)
         x = self.conv2(x)
         return x
@@ -72,40 +38,14 @@ class DecoderBlock(nn.Module):
 
 class CenterBlock(nn.Sequential):
     def __init__(self, in_channels, out_channels, use_batchnorm=True):
-        conv1 = Conv3dReLU(
-            in_channels,
-            out_channels,
-            kernel_size=3,
-            padding=1,
-            use_batchnorm=use_batchnorm,
-        )
-        conv2 = Conv3dReLU(
-            out_channels,
-            out_channels,
-            kernel_size=3,
-            padding=1,
-            use_batchnorm=use_batchnorm,
-        )
+        conv1 = BasicBlock(in_channels, out_channels, kernel_size=3, padding=1, use_batchnorm=use_batchnorm)
+        conv2 = BasicBlock(out_channels, out_channels, kernel_size=3, padding=1, use_batchnorm=use_batchnorm)
         super().__init__(conv1, conv2)
 
 
 class UnetDecoder(nn.Module):
-    def __init__(
-        self,
-        encoder_channels,
-        decoder_channels,
-        n_blocks=5,
-        use_batchnorm=True,
-        center=False,
-    ):
+    def __init__(self, encoder_channels, decoder_channels, use_batchnorm=True, center=False):
         super().__init__()
-
-        if n_blocks != len(decoder_channels):
-            raise ValueError(
-                "Model depth is {}, but you provide `decoder_channels` for {} blocks.".format(
-                    n_blocks, len(decoder_channels)
-                )
-            )
 
         # remove first skip with same spatial resolution
         encoder_channels = encoder_channels[1:]

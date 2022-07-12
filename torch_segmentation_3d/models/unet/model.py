@@ -29,7 +29,6 @@ class Unet(nn.Module):
         self.decoder = UnetDecoder(
             encoder_channels=self.encoder.out_channels,
             decoder_channels=decoder_channels,
-            n_blocks=len(self.encoder.get_stages()) - 1,
             use_batchnorm=decoder_use_batchnorm,
             center=True if encoder_name.startswith("vgg") else False,
         )
