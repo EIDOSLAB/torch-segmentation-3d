@@ -276,7 +276,7 @@ if __name__ == "__main__":
             scheduler.step()
 
         if (epoch % opts.test_freq == 0) or epoch == 1 or epoch == opts.epochs:
-            loss_test, accuracy_test = test(test_loader, model, infonce, opts)
+            loss_test, accuracy_test = test(test_loader, model, opts)
             writer.add_scalar("test/loss", loss_test, epoch)
             writer.add_scalar("test/acc@1", accuracy_test, epoch)
             print(f"test accuracy: {accuracy_test:.2f} best accuracy: {best_acc:.2f}")
