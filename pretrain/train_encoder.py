@@ -267,10 +267,11 @@ if __name__ == "__main__":
             loss_test, accuracy_test = test(test_loader, model, opts)
             writer.add_scalar("test/loss", loss_test, epoch)
             writer.add_scalar("test/acc@1", accuracy_test, epoch)
-            print(f"test accuracy: {accuracy_test:.2f} best accuracy: {best_acc:.2f}")
 
             if accuracy_test > best_acc:
                 best_acc = accuracy_test
+
+            print(f"test accuracy: {accuracy_test:.2f} best accuracy: {best_acc:.2f}")
 
         writer.add_scalar("best_acc@1", best_acc, epoch)
 
