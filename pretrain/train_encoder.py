@@ -95,7 +95,7 @@ def load_data(opts):
 
 
 def load_model(opts):
-    model = EncoderCE(opts.model)
+    model = EncoderCE(opts.model, opts.n_classes)
 
     if opts.device == "cuda" and torch.cuda.device_count() > 1:
         print(f"Using multiple CUDA devices ({torch.cuda.device_count()})")

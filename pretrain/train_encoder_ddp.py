@@ -181,7 +181,10 @@ def main(rank, config):
 
     print("=> Created dataloaders")
     print("=> Loading model")
-    model = EncoderCE(config.arch)
+    n_classes = 1000
+    if "places" in config.dataset:
+        n_classes = 365
+    model = EncoderCE(config.arch, n_classes)
 
     if rank > -1:
         model = DDP(model, device_ids=[rank], output_device=rank)
