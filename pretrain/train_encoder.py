@@ -143,7 +143,6 @@ def train(train_loader, model, optimizer, opts, epoch):
     for idx, (images, labels) in enumerate(train_loader):
         data_time.update(time.time() - t1)
 
-        images = torch.cat(images, dim=0)
         images, labels = images.to(opts.device), labels.to(opts.device)
         bsz = labels.shape[0]
 
