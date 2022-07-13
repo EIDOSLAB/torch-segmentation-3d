@@ -15,6 +15,7 @@ from torch import nn
 from torchvision import transforms
 from torchvision import datasets
 from util import AverageMeter, accuracy, ensure_dir, set_seed
+from encoder_ce import EncoderCE
 
 
 def parse_arguments():
@@ -93,21 +94,8 @@ def load_data(opts):
     return train_loader, test_loader
 
 
-class EncoderCE(nn.Module):
-    def __init__(self, encoder, classifier):
-        super().__init__()
-        self.encoder = encoder
-        self.classifier = classifier
-
-    def forward(self, x):
-        features = self.encoder(x)
-        return self.classifier(features[-1])
-
-
 def load_model(opts):
-    encoder = seg3d.encoders.get_encoder(opts.model, in_channels=1, weights=None)
-    classifier = nn.Sequential(nn.AdaptiveAvgPool3d(1), nn.Flatten(), nn.LazyLinear(opts.n_classes))
-    model = EncoderCE(encoder, classifier)
+    model = EncoderCE(opts.model)
 
     if opts.device == "cuda" and torch.cuda.device_count() > 1:
         print(f"Using multiple CUDA devices ({torch.cuda.device_count()})")
