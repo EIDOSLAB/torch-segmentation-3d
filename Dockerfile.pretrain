@@ -1,6 +1,6 @@
 FROM eidos-service.di.unito.it/eidos-base-pytorch:1.10.0
 
-RUN pip3 install parse tensorboard
+RUN pip3 install parse tensorboard filelock
 
 COPY . /torch-segmentation-3d
 RUN cd /torch-segmentation-3d && pip3 install .
