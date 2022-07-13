@@ -147,7 +147,7 @@ def train(train_loader, model, optimizer, opts, epoch):
         bsz = labels.shape[0]
 
         with torch.cuda.amp.autocast(scaler is not None):
-            logits = model(images)
+            logits = model(images[:, None])
             running_loss = F.cross_entropy(logits, labels)
 
         scaler.scale(running_loss).backward()
@@ -190,7 +190,7 @@ def test(test_loader, model, opts):
         images, labels = images.to(opts.device), labels.to(opts.device)
 
         with torch.no_grad():
-            logits = model(images)
+            logits = model(images[:, None])
             running_loss = F.cross_entropy(logits, labels)
 
         loss.update(running_loss.item(), images.shape[0])
