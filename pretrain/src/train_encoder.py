@@ -137,7 +137,7 @@ def load_data(opts, rank):
         test_dataset, batch_size=256, shuffle=False, num_workers=8, persistent_workers=True
     )
 
-    return train_loader, test_loader
+    return train_loader, test_loader, train_sampler
 
 
 def load_optimizer(model, opts):
@@ -256,7 +256,7 @@ def main(rank, opts):
 
     set_seed(opts.trial)
 
-    train_loader, test_loader = load_data(opts, rank)
+    train_loader, test_loader, sampler = load_data(opts, rank)
 
     model = EncoderCE(opts.model, opts.n_classes)
     model = model.to(device)
@@ -275,13 +275,11 @@ def main(rank, opts):
         )
         tb_dir = os.path.join(opts.log_dir, run_name)
         opts.model_class = model.__class__.__name__ if rank == -1 else model.module.__class__.__name__
-        opts.criterion = infonce
         opts.optimizer_class = optimizer.__class__.__name__
         opts.scheduler = scheduler.__class__.__name__ if scheduler is not None else None
 
         print("Config:", opts)
         print("Model:", model)
-        print("Criterion:", infonce)
         print("Optimizer:", optimizer)
         print("Scheduler:", scheduler)
 
@@ -291,6 +289,9 @@ def main(rank, opts):
     start_time = time.time()
     best_acc = 0.0
     for epoch in range(1, opts.epochs + 1):
+        if sampler is not None:
+            sampler.set_epoch(epoch)
+
         t1 = time.time()
         loss_train, accuracy_train, batch_time, data_time = train(train_loader, model, optimizer, opts, epoch, device)
         t2 = time.time()
