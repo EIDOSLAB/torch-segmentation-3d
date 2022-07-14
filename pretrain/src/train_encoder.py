@@ -64,7 +64,7 @@ def parse_arguments():
                         help="test frequency", default=1)
     parser.add_argument("--amp", action="store_true",
                         help="use amp")
-    parser.add_argument("--world-size", type=int,
+    parser.add_argument("--world_size", type=int,
                         help="number of GPUs (for DDP)", default=1)
 
     return parser.parse_args()
