@@ -12,7 +12,7 @@ method: grid
 parameters:
   data_dir:
     value: /scratch/data/ImageNet
-  data_dir:
+  log_dir:
     value: /scratch/output/torch-segmentation-3d
   dataset:
     value: imagenet-1k
