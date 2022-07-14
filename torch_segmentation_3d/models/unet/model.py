@@ -55,3 +55,9 @@ if __name__ == "__main__":
 
     with torch.no_grad():
         print(model(x).shape)
+    
+    tot_params = 0
+    for p in model.parameters():
+        tot_params += p.numel()
+    print("Total parameters:", tot_params)
+
