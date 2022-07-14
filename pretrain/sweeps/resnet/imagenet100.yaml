@@ -1,0 +1,21 @@
+project: torch-segmentation-3d
+entity: eidos
+program: train_encoder.py
+name: "ResNet - ImageNet100"
+command:
+  - ${env}
+  - python3
+  - ${program}
+  - ${args}
+  - --amp
+method: grid
+parameters:
+  data_dir:
+    value: /scratch/data/ImageNet
+  data_dir:
+    value: /scratch/output/torch-segmentation-3d
+  dataset:
+    value: imagenet100
+  model: 
+    values: [resnet18, resnet34, resnet50, resnet101]
+  
