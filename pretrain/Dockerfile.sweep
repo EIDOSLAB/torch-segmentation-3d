@@ -1,0 +1,2 @@
+FROM eidos-service.di.unito.it/barbano/torch-segmentation-3d:pretrain
+ENTRYPOINT ["/opt/conda/bin/wandb", "agent"]
