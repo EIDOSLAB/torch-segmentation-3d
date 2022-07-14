@@ -65,7 +65,7 @@ def parse_arguments():
     parser.add_argument("--amp", action="store_true",
                         help="use amp")
     parser.add_argument("--world-size", type=int,
-                        help="number of GPUs (for DDP)")
+                        help="number of GPUs (for DDP)", default=1)
 
     return parser.parse_args()
 
