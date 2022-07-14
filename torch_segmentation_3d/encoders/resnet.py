@@ -4,6 +4,7 @@ Based on https://github.com/pytorch/vision/blob/main/torchvision/models/resnet.p
 import torch
 import torch.nn as nn
 from torch_segmentation_3d.base.encoder import BaseEncoder
+from torch.hub import load_state_dict_from_url
 
 
 def conv3x3(in_planes, out_planes, stride=1, groups=1, dilation=1):
@@ -270,36 +271,42 @@ class ResNet(BaseEncoder):
         return features
 
 
-def _resnet(block, layers, out_channels, weights, **kwargs):
-    if weights is not None:
-        raise NotImplementedError("Pretrained encoders are not available")
+resnet_encoders = {
+    "resnet18": {
+        "kwargs": {"block": BasicBlock, "layers": [2, 2, 2, 2], "out_channels": (3, 64, 64, 128, 256, 512)},
+        "weights": {
+            "imagenet100": "https://gitlab.di.unito.it/barbano/torch-segmentation-3d/-/raw/master/imagenet100/resnet18-cde3e1ec.pth"
+        },
+    },
+    "resnet34": {
+        "kwargs": {"block": BasicBlock, "layers": [3, 4, 6, 3], "out_channels": (3, 64, 64, 128, 256, 512)},
+        "weights": {},
+    },
+    "resnet50": {
+        "kwargs": {"block": BasicBlock, "layers": [3, 4, 6, 3], "out_channels": (3, 64, 256, 512, 1024, 2048)},
+        "weights": {},
+    },
+    "resnet101": {
+        "kwargs": {"block": BasicBlock, "layers": [3, 4, 23, 3], "out_channels": (3, 64, 256, 512, 1024, 2048)},
+        "weights": {},
+    },
+}
 
-    model = ResNet(block, layers, out_channels=out_channels, **kwargs)
+
+def build_encoder(arch, weights=None, progress=True, **kwargs):
+    model = ResNet(**resnet_encoders[arch]["kwargs"], **kwargs)
+    if weights is not None:
+        state_dict = load_state_dict_from_url(
+            resnet_encoders[arch]["weights"][weights], progress=progress, check_hash=True, map_location="cpu"
+        )
+        model.load_state_dict(state_dict)
     return model
 
-
-def resnet18(weights=None, **kwargs):
-    return _resnet(BasicBlock, [2, 2, 2, 2], (3, 64, 64, 128, 256, 512), weights, **kwargs)
-
-
-def resnet34(weights=None, **kwargs):
-    return _resnet(BasicBlock, [3, 4, 6, 3], (3, 64, 64, 128, 256, 512), weights, **kwargs)
-
-
-def resnet50(weights=None, **kwargs):
-    return _resnet(Bottleneck, [3, 4, 6, 3], (3, 64, 256, 512, 1024, 2048), weights, **kwargs)
-
-
-def resnet101(weights=None, **kwargs):
-    return _resnet(Bottleneck, [3, 4, 23, 3], (3, 64, 256, 512, 1024, 2048), weights, **kwargs)
-
-
-resnet_encoders = {"resnet18": resnet18, "resnet34": resnet34, "resnet50": resnet50, "resnet101": resnet101}
 
 if __name__ == "__main__":
     x = torch.randn((3, 1, 144, 144, 150))
 
-    model = resnet50(in_channels=1)
+    model = build_encoder("resnet18", weights="imagenet100", in_channels=1)
     with torch.no_grad():
         features = model(x)
         for feat in features:
