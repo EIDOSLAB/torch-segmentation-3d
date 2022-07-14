@@ -7,7 +7,7 @@ class EncoderCE(nn.Module):
         super().__init__()
         self.encoder = seg3d.encoders.get_encoder(encoder_name, in_channels=1, weights=None)
 
-        feats = {"resnet18": 512}
+        feats = {"resnet18": 512, "resnet34": 512, "resnet50": 2048, "resnet101": 2048}
         self.classifier = nn.Sequential(
             nn.AdaptiveAvgPool3d(1), nn.Flatten(), nn.Linear(feats[encoder_name], n_classes)
         )
