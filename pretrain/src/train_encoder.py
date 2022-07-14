@@ -24,7 +24,7 @@ from util import AverageMeter, accuracy, ensure_dir, set_seed
 
 def parse_arguments():
     parser = argparse.ArgumentParser(
-        description="Augmentation for multiview", formatter_class=argparse.ArgumentDefaultsHelpFormatter
+        description="torch-segmentation-3d encoder pretrain", formatter_class=argparse.ArgumentDefaultsHelpFormatter
     )
 
     parser.add_argument("--device", type=str,
@@ -46,11 +46,11 @@ def parse_arguments():
     parser.add_argument("--epochs", type=int,
                         help="number of epochs", default=100)
     parser.add_argument("--lr", type=float,
-                        help="learning rate", default=0.01)
+                        help="learning rate", default=0.1)
     parser.add_argument("--lr_decay", type=str,
-                        help="type of decay", choices=["cosine", "step", "none"], default="cosine")
+                        help="type of decay", choices=["cosine", "step", "none"], default="step")
     parser.add_argument("--lr_decay_epochs", type=str,
-                        help="steps of lr decay (list)", default="100,150")
+                        help="steps of lr decay (list)", default="30,60,90")
     parser.add_argument("--optimizer", type=str,
                         help="optimizer (adam or sgd)", choices=["adam", "sgd"], default="sgd")
     parser.add_argument("--momentum", type=float,
