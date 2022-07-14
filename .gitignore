@@ -1,6 +1,7 @@
 .python-version
 clean.sh
 tests
+pretrain/checkpoints
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
