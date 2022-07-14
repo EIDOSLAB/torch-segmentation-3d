@@ -33,7 +33,7 @@ install_requires = parse_requirements_file("requirements.txt")
 
 setup(
     name="torch-segmentation-3d",  # Required
-    version="0.0.0-dev",  # Required
+    version="0.0.1-dev",  # Required
     description="3D segmentation models for pytorch",  # Optional
     long_description=long_description,  # Optional
     long_description_content_type="text/markdown",  # Optional (see note above)
