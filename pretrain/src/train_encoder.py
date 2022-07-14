@@ -111,19 +111,16 @@ def load_data(opts, rank):
 
         if opts.dataset == "imagenet100":
             train_dataset = data.ImageNet100(root=os.path.join(opts.data_dir, "train"), transform=T_train)
-            print(len(train_dataset), "training images")
-
             test_dataset = data.ImageNet100(root=os.path.join(opts.data_dir, "val"), transform=T_test)
-            print(len(test_dataset), "test images")
             opts.n_classes = 100
 
         elif opts.dataset == "imagenet-1k":
             train_dataset = datasets.ImageFolder(root=os.path.join(opts.data_dir, "train"), transform=T_train)
-            print(len(train_dataset), "training images")
             test_dataset = datasets.ImageFolder(root=os.path.join(opts.data_dir, "val"), transform=T_test)
-            print(len(test_dataset), "test images")
             opts.n_classes = 1000
 
+    print(len(train_dataset), "training images")
+    print(len(test_dataset), "test images")
     train_sampler = None
 
     if rank > -1:
