@@ -140,15 +140,6 @@ def load_data(opts, rank):
     return train_loader, test_loader
 
 
-def load_model(opts):
-    model = EncoderCE(opts.model, opts.n_classes)
-
-    criterion = nn.CrossEntropyLoss()
-    criterion = criterion.to(opts.device)
-
-    return model, criterion
-
-
 def load_optimizer(model, opts):
     if opts.optimizer == "sgd":
         optimizer = torch.optim.SGD(
@@ -267,7 +258,7 @@ def main(rank, opts):
 
     train_loader, test_loader = load_data(opts, rank)
 
-    model, infonce = load_model(opts)
+    model = EncoderCE(opts.model, opts.n_classes)
     model = model.to(device)
     if rank > -1:
         model = DDP(model, device_ids=[rank], output_device=rank)
