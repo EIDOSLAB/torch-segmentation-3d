@@ -283,7 +283,7 @@ def main(rank, opts):
             f"trial{opts.trial}"
         )
         tb_dir = os.path.join(opts.log_dir, run_name)
-        opts.model_class = model.__class__.__name__
+        opts.model_class = model.__class__.__name__ if rank == -1 else model.module.__class__.__name__
         opts.criterion = infonce
         opts.optimizer_class = optimizer.__class__.__name__
         opts.scheduler = scheduler.__class__.__name__ if scheduler is not None else None
