@@ -275,7 +275,8 @@ resnet_encoders = {
     "resnet18": {
         "kwargs": {"block": BasicBlock, "layers": [2, 2, 2, 2], "out_channels": (3, 64, 64, 128, 256, 512)},
         "weights": {
-            "imagenet100": "https://gitlab.di.unito.it/barbano/torch-segmentation-3d/-/raw/master/imagenet100/resnet18-cde3e1ec.pth"
+            "imagenet100": "https://gitlab.di.unito.it/barbano/torch-segmentation-3d/-/raw/master/imagenet100/resnet18-cde3e1ec.pth",
+            "imagenet": "https://gitlab.di.unito.it/barbano/torch-segmentation-3d/-/raw/master/imagenet-1k/resnet18-78569d5e.pth"
         },
     },
     "resnet34": {
