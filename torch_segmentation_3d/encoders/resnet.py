@@ -283,11 +283,11 @@ resnet_encoders = {
         "weights": {},
     },
     "resnet50": {
-        "kwargs": {"block": BasicBlock, "layers": [3, 4, 6, 3], "out_channels": (3, 64, 256, 512, 1024, 2048)},
+        "kwargs": {"block": Bottleneck, "layers": [3, 4, 6, 3], "out_channels": (3, 64, 256, 512, 1024, 2048)},
         "weights": {},
     },
     "resnet101": {
-        "kwargs": {"block": BasicBlock, "layers": [3, 4, 23, 3], "out_channels": (3, 64, 256, 512, 1024, 2048)},
+        "kwargs": {"block": Bottleneck, "layers": [3, 4, 23, 3], "out_channels": (3, 64, 256, 512, 1024, 2048)},
         "weights": {},
     },
 }
@@ -304,6 +304,13 @@ def build_encoder(arch, weights=None, progress=True, **kwargs):
 
 
 if __name__ == "__main__":
+    for arch in resnet_encoders.keys():
+        encoder = build_encoder(arch, weights=None)
+        tot_params = 0
+        for p in encoder.parameters():
+            tot_params += p.numel()
+        print(f"{arch} total parameters: {tot_params:,}")
+
     x = torch.randn((3, 1, 144, 144, 150))
 
     model = build_encoder("resnet18", weights="imagenet100", in_channels=1)
@@ -311,8 +318,5 @@ if __name__ == "__main__":
         features = model(x)
         for feat in features:
             print(feat.shape)
+
     
-    tot_params = 0
-    for p in model.parameters():
-        tot_params += p.numel()
-    print("Total parameters:", tot_params)
