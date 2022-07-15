@@ -223,17 +223,7 @@ class EfficientNet(BaseEncoder):
             norm_layer=None,
             last_channel=None,
             **kwargs,
-    ) -> None:
-        """
-        EfficientNet V1 and V2 main class
-        Args:
-            inverted_residual_setting (Sequence[Union[MBConvConfig, FusedMBConvConfig]]): Network structure
-            dropout (float): The droupout probability
-            stochastic_depth_prob (float): The stochastic depth probability
-            num_classes (int): Number of classes
-            norm_layer (Optional[Callable[..., nn.Module]]): Module specifying the normalization layer to use
-            last_channel (int): The number of channels on the penultimate layer
-        """
+    ):
         super().__init__()
 
         if not inverted_residual_setting:
@@ -255,7 +245,7 @@ class EfficientNet(BaseEncoder):
                         s.block = kwargs["block"]
 
         if norm_layer is None:
-            norm_layer = nn.BatchNorm2d
+            norm_layer = nn.BatchNorm3d
 
         layers = []
 
@@ -303,18 +293,18 @@ class EfficientNet(BaseEncoder):
         )
 
         self.features = nn.Sequential(*layers)
-        self.avgpool = nn.AdaptiveAvgPool2d(1)
+        self.avgpool = nn.AdaptiveAvgPool3d(1)
         self.classifier = nn.Sequential(
             nn.Dropout(p=dropout, inplace=True),
             nn.Linear(lastconv_output_channels, num_classes),
         )
 
         for m in self.modules():
-            if isinstance(m, nn.Conv2d):
+            if isinstance(m, nn.Conv3d):
                 nn.init.kaiming_normal_(m.weight, mode="fan_out")
                 if m.bias is not None:
                     nn.init.zeros_(m.bias)
-            elif isinstance(m, (nn.BatchNorm2d, nn.GroupNorm)):
+            elif isinstance(m, (nn.BatchNorm3d, nn.GroupNorm)):
                 nn.init.ones_(m.weight)
                 nn.init.zeros_(m.bias)
             elif isinstance(m, nn.Linear):
@@ -357,12 +347,28 @@ class EfficientNet(BaseEncoder):
         return features
 
 
+def _efficientnet_conf(arch, **kwargs):
+    if arch.startswith("efficientnet_b"):
+        bneck_conf = partial(MBConvConfig, width_mult=kwargs.pop("width_mult"), depth_mult=kwargs.pop("depth_mult"))
+        return [
+            bneck_conf(1, 3, 1, 32, 16, 1),
+            bneck_conf(6, 3, 2, 16, 24, 2),
+            bneck_conf(6, 5, 2, 24, 40, 2),
+            bneck_conf(6, 3, 2, 40, 80, 3),
+            bneck_conf(6, 5, 1, 80, 112, 3),
+            bneck_conf(6, 5, 2, 112, 192, 4),
+            bneck_conf(6, 3, 1, 192, 320, 1),
+        ]
+    else:
+        raise ValueError(f"Unsupported model type {arch}")
+
+
 efficientnet_encoders = {
     "efficientnet_b0": {
         "kwargs": {
-            "out_channels": (3, 32, 24, 40, 112, 320),
-            "stage_idxs": (3, 5, 9, 16),
-            "model_name": "efficientnet-b0"
+            "inverted_residual_setting": _efficientnet_conf("efficientnet_b0", width_mult=1.0, depth_mult=1.0),
+            "dropout": 0.2,
+            "last_channel": None
         },
         "weights": {}
     },
