@@ -13,12 +13,12 @@ Install:
 Example:
   ```python
   import torch_segmentation_3d as seg3d
-  model = seg3d.models.Unet(encoder_name="resnet18", in_channels=1, classes=3)
+  model = seg3d.models.Unet(encoder_name="resnet18", weights="imagenet", in_channels=1, classes=3)
   ```
 
 Supported encoders:
 
-- Resnet
+- ResNet
 
   | Encoder  | Weights  | Params |
   |----------|----------|---------|
