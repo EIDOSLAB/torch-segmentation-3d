@@ -16,7 +16,6 @@ class Unet(nn.Module):
         in_channels: int = 3,
         classes: int = 1,
         activation: Optional[Union[str, callable]] = None,
-        aux_params: Optional[dict] = None,
     ):
         super().__init__()
 
@@ -55,9 +54,8 @@ if __name__ == "__main__":
 
     with torch.no_grad():
         print(model(x).shape)
-    
+
     tot_params = 0
     for p in model.parameters():
         tot_params += p.numel()
     print("Total parameters:", tot_params)
-
