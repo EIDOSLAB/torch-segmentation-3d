@@ -39,7 +39,7 @@ class Unet(nn.Module):
             kernel_size=3,
         )
 
-        self.name = "u-{}".format(encoder_name)
+        self.name = "unet-{}".format(encoder_name)
 
     def forward(self, x):
         features = self.encoder(x)
