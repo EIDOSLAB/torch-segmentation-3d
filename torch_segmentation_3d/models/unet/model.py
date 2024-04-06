@@ -13,6 +13,7 @@ class Unet(nn.Module):
         encoder_weights: Optional[str] = None,
         decoder_use_batchnorm: bool = True,
         decoder_channels: List[int] = (256, 128, 64, 32, 16),
+        decoder_exact=True,
         in_channels: int = 3,
         classes: int = 1,
         activation: Optional[Union[str, callable]] = None,
@@ -30,6 +31,7 @@ class Unet(nn.Module):
             decoder_channels=decoder_channels,
             use_batchnorm=decoder_use_batchnorm,
             center=True if encoder_name.startswith("vgg") else False,
+            exact=decoder_exact
         )
 
         self.segmentation_head = SegmentationHead(
@@ -49,8 +51,8 @@ class Unet(nn.Module):
 
 
 if __name__ == "__main__":
-    model = Unet(encoder_name="resnet18", encoder_weights=None, in_channels=1, classes=3)
-    x = torch.randn((1, 1, 224, 224, 224))
+    model = Unet(encoder_name="resnet18", encoder_weights=None, in_channels=1, classes=3, decoder_exact=False)
+    x = torch.randn((1, 1, 121, 145, 121))
 
     with torch.no_grad():
         print(model(x).shape)

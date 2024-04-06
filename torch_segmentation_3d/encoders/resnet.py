@@ -312,9 +312,9 @@ if __name__ == "__main__":
             tot_params += p.numel()
         print(f"{arch} total parameters: {tot_params:,}")
 
-    x = torch.randn((3, 1, 144, 144, 150))
+    x = torch.randn((3, 1, 121, 145, 121))
 
-    model = build_encoder("resnet18", weights="imagenet100", in_channels=1)
+    model = build_encoder("resnet18", weights="imagenet", in_channels=1)
     with torch.no_grad():
         features = model(x)
         for feat in features:

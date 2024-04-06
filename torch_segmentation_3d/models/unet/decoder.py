@@ -18,8 +18,9 @@ class BasicBlock(nn.Sequential):
 
 
 class DecoderBlock(nn.Module):
-    def __init__(self, in_channels, skip_channels, out_channels, use_batchnorm=True):
+    def __init__(self, in_channels, skip_channels, out_channels, use_batchnorm=True, exact=True):
         super().__init__()
+        self.exact = exact
         self.conv1 = BasicBlock(
             in_channels + skip_channels, out_channels, kernel_size=3, padding=1, use_batchnorm=use_batchnorm
         )
@@ -29,6 +30,8 @@ class DecoderBlock(nn.Module):
         x = F.interpolate(x, scale_factor=2, mode="nearest")
 
         if skip is not None:
+            if skip.shape != x.shape and not self.exact:
+                skip = F.interpolate(skip, size=x.shape[2:], mode="nearest")
             x = torch.cat([x, skip], dim=1)
 
         x = self.conv1(x)
@@ -44,7 +47,7 @@ class CenterBlock(nn.Sequential):
 
 
 class UnetDecoder(nn.Module):
-    def __init__(self, encoder_channels, decoder_channels, use_batchnorm=True, center=False):
+    def __init__(self, encoder_channels, decoder_channels, use_batchnorm=True, center=False, exact=True):
         super().__init__()
 
         # remove first skip with same spatial resolution
@@ -64,7 +67,7 @@ class UnetDecoder(nn.Module):
             self.center = nn.Identity()
 
         # combine decoder keyword arguments
-        kwargs = dict(use_batchnorm=use_batchnorm)
+        kwargs = dict(use_batchnorm=use_batchnorm, exact=exact)
         blocks = [
             DecoderBlock(in_ch, skip_ch, out_ch, **kwargs)
             for in_ch, skip_ch, out_ch in zip(in_channels, skip_channels, out_channels)
