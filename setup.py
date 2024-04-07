@@ -41,10 +41,10 @@ setup(
     url="https://github.com/carloalbertobarbano/torch-segmentation-3d",  # Optional
     # This should be your name or the name of the organization which owns the
     # project.
-    # author='A. Random Developer',  # Optional
+    author='Carlo Alberto Barbano',  # Optional
     # This should be a valid email address corresponding to the author listed
     # above.
-    # author_email='author@example.com',  # Optional
+    author_email='carlo.barbano@unito.it',  # Optional
     classifiers=[  # Optional
         # How mature is this project? Common values are
         #   3 - Alpha
