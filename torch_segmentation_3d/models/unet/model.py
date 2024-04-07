@@ -1,5 +1,6 @@
 import torch
 import torch.nn as nn
+import torch.nn.functional as F
 from typing import Optional, Union, List
 from torch_segmentation_3d.encoders import get_encoder
 from torch_segmentation_3d.base.heads import SegmentationHead
@@ -17,6 +18,7 @@ class Unet(nn.Module):
         in_channels: int = 3,
         classes: int = 1,
         activation: Optional[Union[str, callable]] = None,
+        interp_output_size=False,
     ):
         super().__init__()
 
@@ -41,17 +43,23 @@ class Unet(nn.Module):
             kernel_size=3,
         )
 
+        self.interp_output_size = interp_output_size
         self.name = "unet-{}".format(encoder_name)
 
     def forward(self, x):
         features = self.encoder(x)
         decoder_output = self.decoder(*features)
         masks = self.segmentation_head(decoder_output)
+
+        if self.interp_output_size:
+            masks = F.interpolate(masks, size=x.shape[2:], mode="trilinear")
+
         return masks
 
 
 if __name__ == "__main__":
-    model = Unet(encoder_name="resnet18", encoder_weights=None, in_channels=1, classes=3, decoder_exact=False)
+    model = Unet(encoder_name="resnet18", encoder_weights=None, in_channels=1, classes=3,
+                 decoder_exact=False, interp_output_size=True)
     x = torch.randn((1, 1, 121, 145, 121))
 
     with torch.no_grad():
