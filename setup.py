@@ -2,7 +2,7 @@ import sys
 from os import path
 
 from setuptools import setup, find_packages
-from torch_segmentation_3d import __version__
+
 
 if sys.version_info <= (3, 7):
     error = """Python {py} detected.
@@ -34,7 +34,7 @@ install_requires = parse_requirements_file("requirements.txt")
 
 setup(
     name="torch-segmentation-3d",  # Required
-    version=__version__,  # Required
+    version="0.0.3-dev",  # Required
     description="3D segmentation models for pytorch",  # Optional
     long_description=long_description,  # Optional
     long_description_content_type="text/markdown",  # Optional (see note above)
