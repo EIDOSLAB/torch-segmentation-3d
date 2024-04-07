@@ -2,7 +2,7 @@ import sys
 from os import path
 
 from setuptools import setup, find_packages
-from .torch_segmentation_3d import __version__
+from torch_segmentation_3d import __version__
 
 if sys.version_info <= (3, 7):
     error = """Python {py} detected.
