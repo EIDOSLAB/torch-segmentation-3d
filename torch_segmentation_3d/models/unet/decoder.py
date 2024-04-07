@@ -31,7 +31,7 @@ class DecoderBlock(nn.Module):
 
         if skip is not None:
             if skip.shape != x.shape and not self.exact:
-                skip = F.interpolate(skip, size=x.shape[2:], mode="nearest")
+                x = F.interpolate(x, size=skip.shape[2:], mode="nearest")
             x = torch.cat([x, skip], dim=1)
 
         x = self.conv1(x)
